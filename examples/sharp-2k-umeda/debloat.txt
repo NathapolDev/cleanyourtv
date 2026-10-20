@@ -1,0 +1,61 @@
+# SHARP 2K Smart TV (Skyworth-built, ro.product.device umeda, MediaTek), Android TV 11 (API 30) with the
+# Google TV home (launcherx), firmware RTMA.250416.022, Thailand. About 1.4 GB RAM, UI at 1280x720, 213 dpi.
+# Skyworth's own packages use the com.smartdevice, com.coocaa and com.tianci prefixes, as on
+# examples/philips-smart-4k-google-tv and examples/panasonic-th-40hs550k.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sharp-2k-umeda/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sharp-2k-umeda/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx. Live TV: com.mediatek.wwtv.tvcenter.
+# Disabled from the factory, so not listed: com.google.android.marvin.talkback, com.smartdevice.recommendation.
+#
+# Quirks on this firmware, checked on the TV:
+# - USB debugging on: port 5555 answered straight away and shows in `adb mdns services`; ro.adb.secure=1.
+# - Home: launcherx (priority 2), then setupwraith/.RecoveryActivity (priority 1), then Settings' FallbackHome.
+# - The saved Wi-Fi network belonged to android.uid.system, not setupwraith, so setupwraith could go.
+
+# Shop demo, setup leftovers, partner auto-installs
+android.autoinstalls.config.google.gtvpai     # Play partner auto-installs
+fusion.android.tv.demo                        # Skyworth ePop shop demo player
+com.coocaa.demonow.lightining                 # "Demo Now" shop demo, boot receiver
+com.mstar.android.tv.disclaimercustomization  # disclaimer screen used only by the first-run setup
+com.Smartdevice.emanual                       # on-screen manual
+
+# Telemetry and background services
+com.google.android.feedback
+com.google.android.apps.nbu.smartconnect.tv   # Google data-saver VPN service
+com.smartdevice.aftersale                     # "after-sale" service: boot + network receivers, can install APKs
+com.smartdevice.recordactivation              # records first activation
+
+# Rows injected into the stock home
+com.smartdevice.leanbacklauncher.customizer   # partner config that injects rows into the home screen
+
+# Not used (by choice). Kept: Netflix, YouTube, iQIYI, Bilibili, Crunchyroll, beIN Sports.
+com.google.android.youtube.tvmusic            # YouTube Music
+com.amazon.amazonvideo.livingroom             # Prime Video
+com.apple.atve.androidtv.appletv              # Apple TV
+com.wbd.stream                                # HBO Max
+in.startv.hotstar.dplus.tv                    # Disney+ Hotstar
+com.truedmp.idtv                              # TrueID TV
+com.doonung.dtv                               # Doonung
+com.formulaone.production                     # F1 TV
+com.google.android.videos                     # Google TV / Play Movies
+com.google.android.play.games                 # Play Games
+com.tcl.browser                               # TCL browser
+
+# Google TV setup wizard: its RecoveryActivity takes Home once launcherx is disabled. Check
+# `dumpsys wifi | grep -o 'cname=[^ ]*'` first; on this set the network belonged to android.uid.system.
+com.google.android.tungsten.setupwraith
+
+# Stock launcher, replaced by launcher/
+# com.google.android.apps.tv.launcherx   # launcher/build-and-install disables it itself, after Home has moved
+
+# Speed / RAM tune-up (by choice). Point the screensaver at the launcher's clock before disabling dreamx:
+#   settings put secure screensaver_components com.gathin.tvhome/.ClockDream
+#   settings put secure screensaver_default_component com.gathin.tvhome/.ClockDream
+# restore does not undo that; the stock value of both is com.google.android.apps.tv.dreamx/.service.Backdrop.
+com.google.android.apps.tv.dreamx             # Ambient screensaver, pulls pictures from the network
+com.google.android.syncadapters.calendar      # calendar sync, no calendar on a TV
+com.google.android.partnersetup               # first-setup partner config
+com.google.android.katniss                    # Google Assistant / voice search, two resident processes (~63 MB); mic button stops
